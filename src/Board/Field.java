@@ -16,6 +16,9 @@ public class Field extends JButton implements ActionListener{
     }
 
     public void actionPerformed(ActionEvent e){
-        // TO DO
+//        if(this.value == 0){
+//            this.setIcon(white);
+//            this.value = 1;
+//        }
     }
 }

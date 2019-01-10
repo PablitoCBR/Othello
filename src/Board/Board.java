@@ -8,11 +8,12 @@ public class Board extends JFrame {
     JPanel panel = new JPanel();
     Field fields[][] = new Field[8][8];
 
+
     public Board(){
         super("Othello");
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1000, 800);
+        setSize(800, 800);
         setResizable(false);
 
         panel.setLayout(new GridLayout(8,8));
