@@ -2,23 +2,31 @@ package Board;
 
 import javax.swing.*;
 import javax.swing.ImageIcon;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.border.LineBorder;
 
-public class Field extends JButton implements ActionListener{
+public class Field extends JButton{
     ImageIcon black, white;
-    byte value = 0; // 0 = empty, 1 = black, 2 = white
+    private int _id; // eg. 26 => row: 2 col: 6
 
-    public Field(){
+    public Field(int id){
+        this._id = id;
         black = new ImageIcon(this.getClass().getResource("blackCircle.png"));
         white = new ImageIcon(this.getClass().getResource("whiteCircle.png"));
-        this.addActionListener(this);
+        this.setBackground(new Color(17,145,83));
+        this.setBorder(new LineBorder(Color.BLACK));
     }
 
-    public void actionPerformed(ActionEvent e){
-//        if(this.value == 0){
-//            this.setIcon(white);
-//            this.value = 1;
-//        }
+    public void setBlackIcon(){
+        this.setIcon(black);
+    }
+    public void setWhiteIcon(){
+        this.setIcon(white);
+    }
+
+    public int getId(){
+        return _id;
     }
 }
