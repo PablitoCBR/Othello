@@ -14,6 +14,7 @@ public class Game {
     private  Board _board;
     private  Player _playerBlack, _playerWhite;
     private boolean _activePlayer; // true = black, false = white
+    private Judge _judge = Judge.getJudgeInstance();
 
     private  Game(){
         _board = new Board();
@@ -83,16 +84,24 @@ public class Game {
                 int row = ((Field)e.getSource()).getId() / 10;
                 int col = ((Field)e.getSource()).getId() % 10;
                 if(_activePlayer){
-                    _board.setFieldIcon(row,col, (byte)1);
-                    _fieldsStatus[row][col] = 1;
-                    _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - 1);
-                    _activePlayer = false;
+                    if(_fieldsStatus[row][col] == 0){
+                        if(_judge.verifyMove(row, col, _activePlayer, _fieldsStatus)){
+                            _board.setFieldIcon(row,col, (byte)1);
+                            _fieldsStatus[row][col] = 1;
+                            _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - 1);
+                            _activePlayer = false;
+                        }
+                    }
                 }
                 else{
-                    _board.setFieldIcon(row,col, (byte)2);
-                    _fieldsStatus[row][col] = 2;
-                    _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - 1);
-                    _activePlayer = true;
+                    if(_fieldsStatus[row][col] == 0) {
+                        if(_judge.verifyMove(row, col, _activePlayer, _fieldsStatus)) {
+                            _board.setFieldIcon(row, col, (byte) 2);
+                            _fieldsStatus[row][col] = 2;
+                            _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - 1);
+                            _activePlayer = true;
+                        }
+                    }
                 }
                 ((Field)e.getSource()).setClickStatus(false);
                 updateInfo();
