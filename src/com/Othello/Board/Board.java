@@ -1,4 +1,4 @@
-package Board;
+package com.Othello.Board;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,11 +43,24 @@ public class Board extends JFrame {
     public void setRemainingBlackPawns(int amount){
         _blackRemaining.setText("Black: " + amount);
     }
+    public void setFieldIcon(int row, int col, byte IconType){
+        switch (IconType){
+            case 0:
+                _fields[row][col].setEmptyField();
+                break;
+            case 1:
+                _fields[row][col].setBlackIcon();
+                break;
+            case 2:
+                _fields[row][col].setWhiteIcon();
+                break;
+        }
+    }
 
     private JMenuBar CreateMenuBar(){
         JMenuBar menuBar = new JMenuBar();
 
-        var menu = new JMenu("Game");
+        var menu = new JMenu("com/Othello/Game");
 
         var newGame = new JMenuItem("New");
         newGame.setToolTipText("Start new game");
@@ -76,9 +89,9 @@ public class Board extends JFrame {
     private void setInitialInfo(){
         _info.setLayout(new GridLayout(1,2));
         _info.setMaximumSize(new Dimension(800,50));
-        _whiteRemaining = new JLabel("White:  32") ;
+        _whiteRemaining = new JLabel() ;
         _whiteRemaining.setFont(new Font("Arial", Font.BOLD, 20));
-        _blackRemaining = new JLabel("Black:  32");
+        _blackRemaining = new JLabel();
         _blackRemaining.setFont(new Font("Arial", Font.BOLD, 20));
         _info.add(_whiteRemaining);
         _info.add(_blackRemaining);

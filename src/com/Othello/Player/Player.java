@@ -1,7 +1,7 @@
-package Player;
+package com.Othello.Player;
 
 public class Player {
-    private boolean _color; // 0 = black, 1 = white
+    private boolean _color; // true = black, false = white
     private int _remainingPaws;
 
     public Player(boolean color){

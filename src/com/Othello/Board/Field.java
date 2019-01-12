@@ -1,10 +1,8 @@
-package Board;
+package com.Othello.Board;
 
 import javax.swing.*;
 import javax.swing.ImageIcon;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.border.LineBorder;
 
 public class Field extends JButton{
@@ -24,6 +22,9 @@ public class Field extends JButton{
     }
     public void setWhiteIcon(){
         this.setIcon(white);
+    }
+    public void setEmptyField(){
+        this.setIcon(null);
     }
 
     public int getId(){
