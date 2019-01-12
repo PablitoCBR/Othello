@@ -72,8 +72,9 @@ public class Game {
         setNewGame();
     }
 
-    public void GameCycle(){
-
+    private void updateInfo(){
+        _board.setRemainingBlackPawns(_playerBlack.getRemainingPaws());
+        _board.setRemainingWhitePawns(_playerWhite.getRemainingPaws());
     }
 
     private class FieldListener implements ChangeListener{
@@ -84,11 +85,17 @@ public class Game {
                 if(_activePlayer){
                     _board.setFieldIcon(row,col, (byte)1);
                     _fieldsStatus[row][col] = 1;
+                    _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - 1);
+                    _activePlayer = false;
                 }
                 else{
-                    // TO DO
+                    _board.setFieldIcon(row,col, (byte)2);
+                    _fieldsStatus[row][col] = 2;
+                    _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - 1);
+                    _activePlayer = true;
                 }
                 ((Field)e.getSource()).setClickStatus(false);
+                updateInfo();
             }
         }
     }
