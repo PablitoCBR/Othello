@@ -3,13 +3,14 @@ package com.Othello.Board;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import com.Othello.Board.BoardEvents.FieldClickEvent;
 
 public class Board extends JFrame {
     private JPanel _layout;
     private JPanel _board = new JPanel();
     private JPanel _info = new JPanel();
 
-    private Field _fields[][] = new Field[8][8];
+    public final Field[][] _fields = new Field[8][8];
     private JLabel _whiteRemaining, _blackRemaining;
 
     public Board(){
@@ -60,7 +61,7 @@ public class Board extends JFrame {
     private JMenuBar CreateMenuBar(){
         JMenuBar menuBar = new JMenuBar();
 
-        var menu = new JMenu("com/Othello/Game");
+        var menu = new JMenu("Game");
 
         var newGame = new JMenuItem("New");
         newGame.setToolTipText("Start new game");
@@ -102,6 +103,7 @@ public class Board extends JFrame {
         for(int i=0; i<8; i++){
             for(int j=0; j<8; j++){
                 _fields[i][j] = new Field(i*10 + j);
+                _fields[i][j].addActionListener(new FieldClickEvent());
                 _board.add(_fields[i][j]);
             }
         }

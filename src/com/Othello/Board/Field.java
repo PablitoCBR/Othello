@@ -8,6 +8,7 @@ import javax.swing.border.LineBorder;
 public class Field extends JButton{
     ImageIcon black, white;
     private int _id; // eg. 26 => row: 2 col: 6
+    private boolean _clickStatus;
 
     public Field(int id){
         this._id = id;
@@ -25,6 +26,12 @@ public class Field extends JButton{
     }
     public void setEmptyField(){
         this.setIcon(null);
+    }
+    public void setClickStatus(boolean status){
+        this._clickStatus = status;
+    }
+    public boolean getClickStatus(){
+        return this._clickStatus;
     }
 
     public int getId(){

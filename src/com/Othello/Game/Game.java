@@ -1,7 +1,10 @@
 package com.Othello.Game;
 
 import com.Othello.Board.Board;
+import com.Othello.Board.Field;
 import com.Othello.Player.Player;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 // Singleton pattern
 public class Game {
@@ -10,9 +13,15 @@ public class Game {
     private  byte[][] _fieldsStatus; // 0 - empty, 1 - black, 2 - white
     private  Board _board;
     private  Player _playerBlack, _playerWhite;
+    private boolean _activePlayer; // true = black, false = white
 
     private  Game(){
         _board = new Board();
+        for(Field fields[] : _board._fields){
+            for(Field field : fields ){
+                field.addChangeListener(new FieldListener());
+            }
+        }
         _playerBlack = new Player(true);
         _playerWhite = new Player(false);
         setNewGame();
@@ -38,7 +47,6 @@ public class Game {
         _fieldsStatus[4][3] = 1;
         _fieldsStatus[4][4] = 2;
 
-
         _board.setRemainingBlackPawns(32);
         _board.setRemainingWhitePawns(32);
 
@@ -47,15 +55,16 @@ public class Game {
         _board.setFieldIcon(4,3, (byte) 1);
         _board.setFieldIcon(4,4, (byte) 2);
 
+        _activePlayer = true;
     }
 
     public void restartGame(){
-        for(int i =0;i<8;i++){
-            for(int j=0;j<8;j++){
-                _board.setFieldIcon(i,j,(byte)0);
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                _board.setFieldIcon( i, j,(byte)0);
             }
-
         }
+
         _playerWhite.setRemainingPaws(32);
         _playerBlack.setRemainingPaws(32);
         _board.setRemainingWhitePawns(32);
@@ -63,4 +72,26 @@ public class Game {
         setNewGame();
     }
 
+    public void GameCycle(){
+
+    }
+
+    private class FieldListener implements ChangeListener{
+        public void stateChanged(ChangeEvent e){
+            if(((Field)e.getSource()).getClickStatus()){
+                int row = ((Field)e.getSource()).getId() / 10;
+                int col = ((Field)e.getSource()).getId() % 10;
+                if(_activePlayer){
+                    _board.setFieldIcon(row,col, (byte)1);
+                    _fieldsStatus[row][col] = 1;
+                }
+                else{
+                    // TO DO
+                }
+                ((Field)e.getSource()).setClickStatus(false);
+            }
+        }
+    }
 }
+
+
