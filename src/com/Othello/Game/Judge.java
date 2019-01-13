@@ -22,8 +22,8 @@ public class Judge {
         for(int i = -1; i < 2; i++)
             for(int j = -1; j < 2; j++)
                 if(Math.abs(i) + Math.abs(j) != 0)
-                    if(row + i >= 0 && row + i <= 8)
-                        if(col + j >= 0 && col + j <= 8)
+                    if(row + i >= 0 && row + i < 8)
+                        if(col + j >= 0 && col + j < 8)
                             if(fieldsStatus[row + i][col + j] == opponentColor)
                                 if(checkPath(row, col,  i, j, fieldsStatus, playerColor))
                                     return true;
@@ -31,7 +31,7 @@ public class Judge {
         return false;
     }
 
-    private boolean checkPath(int row, int col, int directionRow,
+    public boolean checkPath(int row, int col, int directionRow,
                               int directionCol  , byte[][] fieldsStatus, boolean playerColor){
         byte color;
         if(playerColor)
@@ -45,7 +45,7 @@ public class Judge {
                return true;
            else if(fieldsStatus[row][col] == 0)
                return false;
-        }while(row >= 0 && row <= 8 && col >= 0 && col <= 8);
+        }while(row >= 0 && row < 8 && col >= 0 && col < 8);
 
         return false;
     }

@@ -3,8 +3,10 @@ package com.Othello.Game;
 import com.Othello.Board.Board;
 import com.Othello.Board.Field;
 import com.Othello.Player.Player;
+import com.Othello.Game.Helpers.FieldStatusTemp;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.util.List;
 
 // Singleton pattern
 public class Game {
@@ -15,6 +17,7 @@ public class Game {
     private  Player _playerBlack, _playerWhite;
     private boolean _activePlayer; // true = black, false = white
     private Judge _judge = Judge.getJudgeInstance();
+    private BoardUpdater _boardUpdater = BoardUpdater.getBoardUpdaterInstance();
 
     private  Game(){
         _board = new Board();
@@ -78,17 +81,38 @@ public class Game {
         _board.setRemainingWhitePawns(_playerWhite.getRemainingPaws());
     }
 
+    private void updateFieldsAndPawnsLeft(int row, int col, boolean activePlayer){
+        int pawnsChange = 0;
+        List<FieldStatusTemp> fieldsToUpdate = _boardUpdater.getFieldsToUpdate(row, col, activePlayer, _fieldsStatus);
+        for(FieldStatusTemp fieldToUpdate : fieldsToUpdate){
+            //System.out.println(fieldToUpdate.row + " " + fieldToUpdate.col + " " + fieldToUpdate.colorByte);
+            pawnsChange++;
+            _board.setFieldIcon(fieldToUpdate.row, fieldToUpdate.col, fieldToUpdate.colorByte);
+            _fieldsStatus[fieldToUpdate.row][fieldToUpdate.col] = fieldToUpdate.colorByte;
+        }
+        if(activePlayer) {
+            _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - pawnsChange);
+            _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() + pawnsChange);
+        }
+        else{
+            _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() + pawnsChange);
+            _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - pawnsChange);
+        }
+    }
+
     private class FieldListener implements ChangeListener{
+        @Override
         public void stateChanged(ChangeEvent e){
             if(((Field)e.getSource()).getClickStatus()){
                 int row = ((Field)e.getSource()).getId() / 10;
                 int col = ((Field)e.getSource()).getId() % 10;
                 if(_activePlayer){
                     if(_fieldsStatus[row][col] == 0){
-                        if(_judge.verifyMove(row, col, _activePlayer, _fieldsStatus)){
+                        if(_judge.verifyMove(row, col, true, _fieldsStatus)){
                             _board.setFieldIcon(row,col, (byte)1);
                             _fieldsStatus[row][col] = 1;
                             _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - 1);
+                            updateFieldsAndPawnsLeft(row, col, true);
                             _activePlayer = false;
                             _board.setActivePlayer(false);
                         }
@@ -96,10 +120,11 @@ public class Game {
                 }
                 else{
                     if(_fieldsStatus[row][col] == 0) {
-                        if(_judge.verifyMove(row, col, _activePlayer, _fieldsStatus)) {
+                        if(_judge.verifyMove(row, col, false, _fieldsStatus)) {
                             _board.setFieldIcon(row, col, (byte) 2);
                             _fieldsStatus[row][col] = 2;
                             _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - 1);
+                            updateFieldsAndPawnsLeft(row, col, false);
                             _activePlayer = true;
                             _board.setActivePlayer(true);
                         }

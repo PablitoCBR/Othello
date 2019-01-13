@@ -13,7 +13,7 @@ public class Player {
         return  _remainingPaws;
     }
     public void setRemainingPaws(int amount){
-        if(amount >= 0 && amount < 33){
+        if(amount >= 0){
             this._remainingPaws = amount;
         }
     }
