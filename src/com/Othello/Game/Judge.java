@@ -19,21 +19,15 @@ public class Judge {
             opponentColor = 2;
         else opponentColor = 1 ;
 
-        for(int i = -1; i < 2; i++){
-            for(int j = -1; j < 2; j++){
-                if(Math.abs(i) + Math.abs(j) != 0){
-                    if(row + i >= 0 && row + i <= 8){
-                        if(col + j >= 0 && col + j <= 8){
-                            if(fieldsStatus[row + i][col + j] == opponentColor){
-                                if(checkPath(row, col,  i, j, fieldsStatus, playerColor)){
+        for(int i = -1; i < 2; i++)
+            for(int j = -1; j < 2; j++)
+                if(Math.abs(i) + Math.abs(j) != 0)
+                    if(row + i >= 0 && row + i <= 8)
+                        if(col + j >= 0 && col + j <= 8)
+                            if(fieldsStatus[row + i][col + j] == opponentColor)
+                                if(checkPath(row, col,  i, j, fieldsStatus, playerColor))
                                     return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+
         return false;
     }
 

@@ -11,7 +11,7 @@ public class Board extends JFrame {
     private JPanel _info = new JPanel();
 
     public final Field[][] _fields = new Field[8][8];
-    private JLabel _whiteRemaining, _blackRemaining;
+    private JLabel _whiteRemaining, _blackRemaining, _activePlayer;
 
     public Board(){
         super("Othello");
@@ -43,6 +43,11 @@ public class Board extends JFrame {
     }
     public void setRemainingBlackPawns(int amount){
         _blackRemaining.setText("Black: " + amount);
+    }
+    public void setActivePlayer(boolean activePlayer) {
+        if(activePlayer)
+            _activePlayer.setText("BLACK");
+        else _activePlayer.setText("WHITE");
     }
     public void setFieldIcon(int row, int col, byte IconType){
         switch (IconType){
@@ -88,13 +93,24 @@ public class Board extends JFrame {
     }
 
     private void setInitialInfo(){
-        _info.setLayout(new GridLayout(1,2));
+        _info.setLayout(new GridLayout(1,3));
         _info.setMaximumSize(new Dimension(800,50));
+
         _whiteRemaining = new JLabel() ;
         _whiteRemaining.setFont(new Font("Arial", Font.BOLD, 20));
+        _whiteRemaining.setHorizontalAlignment(JLabel.CENTER);
+
+        _activePlayer = new JLabel();
+        _activePlayer.setFont(new Font("Arial", Font.BOLD, 30));
+        _activePlayer.setForeground(Color.RED);
+        _activePlayer.setHorizontalAlignment(JLabel.CENTER);
+
         _blackRemaining = new JLabel();
         _blackRemaining.setFont(new Font("Arial", Font.BOLD, 20));
+        _blackRemaining.setHorizontalAlignment(JLabel.CENTER);
+
         _info.add(_whiteRemaining);
+        _info.add(_activePlayer);
         _info.add(_blackRemaining);
     }
 

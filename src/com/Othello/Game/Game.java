@@ -23,6 +23,7 @@ public class Game {
                 field.addChangeListener(new FieldListener());
             }
         }
+        _fieldsStatus = new byte[8][8];
         _playerBlack = new Player(true);
         _playerWhite = new Player(false);
         setNewGame();
@@ -37,7 +38,6 @@ public class Game {
     }
 
     private void setNewGame(){
-        _fieldsStatus = new byte[8][8];
         for(byte[] row : _fieldsStatus){
             for(byte field : row){
                 field = 0;
@@ -50,6 +50,7 @@ public class Game {
 
         _board.setRemainingBlackPawns(32);
         _board.setRemainingWhitePawns(32);
+        _board.setActivePlayer(true);
 
         _board.setFieldIcon(3,3, (byte) 2);
         _board.setFieldIcon(3,4, (byte) 1);
@@ -68,8 +69,7 @@ public class Game {
 
         _playerWhite.setRemainingPaws(32);
         _playerBlack.setRemainingPaws(32);
-        _board.setRemainingWhitePawns(32);
-        _board.setRemainingBlackPawns(32);
+
         setNewGame();
     }
 
@@ -90,6 +90,7 @@ public class Game {
                             _fieldsStatus[row][col] = 1;
                             _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - 1);
                             _activePlayer = false;
+                            _board.setActivePlayer(false);
                         }
                     }
                 }
@@ -100,6 +101,7 @@ public class Game {
                             _fieldsStatus[row][col] = 2;
                             _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - 1);
                             _activePlayer = true;
+                            _board.setActivePlayer(true);
                         }
                     }
                 }
