@@ -40,22 +40,18 @@ public class Judge {
             color = 1;
         else  color = 2;
 
-        while(true){
-           row += directionRow;
-           col += directionCol;
-           if(row >= 0 && row < 8)
-           {
-               if(col >= 0 && col < 8)
-               {
-                   if(fieldsStatus[row][col] == color)
-                       return true;
-                   else if(fieldsStatus[row][col] == 0)
-                       return false;
-               }
-               else return false;
-           }
-           else return false;
+        row += directionRow;
+        col += directionCol;
+
+        while(row >= 0 && row < 8 && col >= 0 && col < 8){
+           if(fieldsStatus[row][col] == color)
+               return true;
+           else if(fieldsStatus[row][col] == 0)
+               return false;
+            row += directionRow;
+            col += directionCol;
         }
+        return false;
     }
 }
 

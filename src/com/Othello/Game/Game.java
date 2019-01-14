@@ -63,7 +63,7 @@ public class Game {
         _activePlayer = true;
     }
 
-    public void restartGame(){
+    private void reset(){
         for(int i = 0; i < 8; i++)
             for(int j = 0; j < 8; j++)
                 _board.setFieldIcon( i, j,(byte)0);

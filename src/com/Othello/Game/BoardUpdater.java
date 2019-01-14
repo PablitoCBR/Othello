@@ -20,29 +20,31 @@ public class BoardUpdater {
     public List<FieldStatusTemp> getFieldsToUpdate(int row, int col, boolean activePlayer, byte[][] fieldsStatus){
         ArrayList<FieldStatusTemp> tempFieldsStatus = new ArrayList<FieldStatusTemp>();
         byte opponentColor;
-        int helperRow;
-        int helperCol;
+        int helperRow, helperCol;
+
         if(activePlayer)
             opponentColor = 2;
         else opponentColor = 1;
+
         List<Pair> directions = getDirections(row, col, activePlayer, fieldsStatus, opponentColor);
+
+        // For each direction where pawns will change color, add each field that will change to to list
         for(Pair direction : directions) {
-            int addRow = direction.rowAdd;
-            int addCol = direction.colAdd;
-            helperRow = row;
-            helperCol = col;
-            helperRow += addRow;
-            helperCol += addCol;
+            helperRow = row + direction.rowAdd;
+            helperCol = col + direction.colAdd;
+
+            // Adding fields until match active player color pawn
             while (fieldsStatus[helperRow][helperCol] == opponentColor){
                 tempFieldsStatus.add(new FieldStatusTemp(helperRow, helperCol, activePlayer));
-                helperRow += addRow;
-                helperCol += addCol;
+                helperRow += direction.rowAdd;
+                helperCol += direction.colAdd;
             }
         }
         return tempFieldsStatus;
     }
 
-    private List<Pair> getDirections(int row, int col, boolean color, byte[][] fieldsStatus, int opponentColor){
+    // Get all directions where pawns will change color
+    private List<Pair> getDirections(int row, int col, boolean activePlayer, byte[][] fieldsStatus, byte opponentColor){
         List<Pair> directions = new ArrayList<Pair>();
         for(int i = -1; i < 2; i++)
             for(int j = -1; j < 2; j++)
@@ -50,8 +52,8 @@ public class BoardUpdater {
                     if(row + i >= 0 && row + i < 8)
                         if(col + j >= 0 && col + j < 8)
                             if(fieldsStatus[row + i][col + j] == opponentColor)
-                                if (_judge.checkPath(row, col, i, j, fieldsStatus, color))
-                                    directions.add(new Pair(i,j));
+                                if (_judge.checkPath(row, col, i, j, fieldsStatus, activePlayer))
+                                    directions.add(new Pair(i, j));
         return directions;
     }
 
