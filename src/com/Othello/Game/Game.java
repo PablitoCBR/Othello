@@ -64,15 +64,12 @@ public class Game {
     }
 
     public void restartGame(){
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
+        for(int i = 0; i < 8; i++)
+            for(int j = 0; j < 8; j++)
                 _board.setFieldIcon( i, j,(byte)0);
-            }
-        }
 
         _playerWhite.setRemainingPaws(32);
         _playerBlack.setRemainingPaws(32);
-
         setNewGame();
     }
 
@@ -85,7 +82,6 @@ public class Game {
         int pawnsChange = 0;
         List<FieldStatusTemp> fieldsToUpdate = _boardUpdater.getFieldsToUpdate(row, col, activePlayer, _fieldsStatus);
         for(FieldStatusTemp fieldToUpdate : fieldsToUpdate){
-            //System.out.println(fieldToUpdate.row + " " + fieldToUpdate.col + " " + fieldToUpdate.colorByte);
             pawnsChange++;
             _board.setFieldIcon(fieldToUpdate.row, fieldToUpdate.col, fieldToUpdate.colorByte);
             _fieldsStatus[fieldToUpdate.row][fieldToUpdate.col] = fieldToUpdate.colorByte;

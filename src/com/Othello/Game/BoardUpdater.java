@@ -1,7 +1,6 @@
 package com.Othello.Game;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import com.Othello.Game.Helpers.FieldStatusTemp;
 
@@ -18,7 +17,6 @@ public class BoardUpdater {
         return boardUpdaterInstance;
     }
 
-    // Stack overflow!!!
     public List<FieldStatusTemp> getFieldsToUpdate(int row, int col, boolean activePlayer, byte[][] fieldsStatus){
         ArrayList<FieldStatusTemp> tempFieldsStatus = new ArrayList<FieldStatusTemp>();
         byte opponentColor;
@@ -28,7 +26,6 @@ public class BoardUpdater {
             opponentColor = 2;
         else opponentColor = 1;
         List<Pair> directions = getDirections(row, col, activePlayer, fieldsStatus, opponentColor);
-        System.out.println(directions.size()); // TEST
         for(Pair direction : directions) {
             int addRow = direction.rowAdd;
             int addCol = direction.colAdd;
