@@ -4,6 +4,8 @@ import com.Othello.Board.Board;
 import com.Othello.Board.Field;
 import com.Othello.Player.Player;
 import com.Othello.Game.Helpers.FieldStatusTemp;
+
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.List;
@@ -15,18 +17,19 @@ public class Game {
     private boolean _activePlayer; // true = black, false = white
     private Judge _judge = Judge.getJudgeInstance();
     private BoardUpdater _boardUpdater = BoardUpdater.getBoardUpdaterInstance();
+    private boolean _isBlackMovePossible, _isWhiteMovePossible;
 
     public  Game(){
-        _board = new Board();
+        this._board = new Board();
         for(Field fields[] : _board._fields){
             for(Field field : fields ){
                 field.addChangeListener(new FieldListener());
             }
         }
-        _fieldsStatus = new byte[8][8];
-        _playerBlack = new Player(true);
-        _playerWhite = new Player(false);
-        setNewGame();
+        this._fieldsStatus = new byte[8][8];
+        this._playerBlack = new Player(true);
+        this._playerWhite = new Player(false);
+        this.setNewGame();
     }
 
     private void setNewGame(){
@@ -35,21 +38,24 @@ public class Game {
                 field = 0;
             }
         }
-        _fieldsStatus[3][3] = 2;
-        _fieldsStatus[3][4] = 1;
-        _fieldsStatus[4][3] = 1;
-        _fieldsStatus[4][4] = 2;
+        this._fieldsStatus[3][3] = 2;
+        this._fieldsStatus[3][4] = 1;
+        this._fieldsStatus[4][3] = 1;
+        this._fieldsStatus[4][4] = 2;
 
-        _board.setRemainingBlackPawns(32);
-        _board.setRemainingWhitePawns(32);
-        _board.setActivePlayer(true);
+        this._board.setRemainingBlackPawns(32);
+        this._board.setRemainingWhitePawns(32);
+        this._board.setActivePlayer(true);
 
-        _board.setFieldIcon(3,3, (byte) 2);
-        _board.setFieldIcon(3,4, (byte) 1);
-        _board.setFieldIcon(4,3, (byte) 1);
-        _board.setFieldIcon(4,4, (byte) 2);
+        this._board.setFieldIcon(3,3, (byte) 2);
+        this._board.setFieldIcon(3,4, (byte) 1);
+        this._board.setFieldIcon(4,3, (byte) 1);
+        this._board.setFieldIcon(4,4, (byte) 2);
 
-        _activePlayer = true;
+        this._isBlackMovePossible = true;
+        this._isWhiteMovePossible = true;
+
+        this._activePlayer = true;
     }
 
     private void reset(){
@@ -57,14 +63,14 @@ public class Game {
             for(int j = 0; j < 8; j++)
                 _board.setFieldIcon( i, j,(byte)0);
 
-        _playerWhite.setRemainingPaws(32);
-        _playerBlack.setRemainingPaws(32);
-        setNewGame();
+        this._playerWhite.setRemainingPaws(32);
+        this._playerBlack.setRemainingPaws(32);
+        this.setNewGame();
     }
 
     private void updateInfo(){
-        _board.setRemainingBlackPawns(_playerBlack.getRemainingPaws());
-        _board.setRemainingWhitePawns(_playerWhite.getRemainingPaws());
+        this._board.setRemainingBlackPawns(_playerBlack.getRemainingPaws());
+        this._board.setRemainingWhitePawns(_playerWhite.getRemainingPaws());
     }
 
     private void updateFieldsAndPawnsLeft(int row, int col, boolean activePlayer){
@@ -72,23 +78,29 @@ public class Game {
         List<FieldStatusTemp> fieldsToUpdate = _boardUpdater.getFieldsToUpdate(row, col, activePlayer, _fieldsStatus);
         for(FieldStatusTemp fieldToUpdate : fieldsToUpdate){
             pawnsChange++;
-            _board.setFieldIcon(fieldToUpdate.row, fieldToUpdate.col, fieldToUpdate.colorByte);
-            _fieldsStatus[fieldToUpdate.row][fieldToUpdate.col] = fieldToUpdate.colorByte;
+            this._board.setFieldIcon(fieldToUpdate.row, fieldToUpdate.col, fieldToUpdate.colorByte);
+            this._fieldsStatus[fieldToUpdate.row][fieldToUpdate.col] = fieldToUpdate.colorByte;
         }
         if(activePlayer) {
-            _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - pawnsChange);
-            _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() + pawnsChange);
+            this._playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() - pawnsChange);
+            this._playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() + pawnsChange);
         }
         else{
-            _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() + pawnsChange);
-            _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - pawnsChange);
+            this._playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() + pawnsChange);
+            this._playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - pawnsChange);
         }
     }
 
-    private void CheckPossibilityOfMove(boolean activePlayer){
-        for(byte fields[] : this._fieldsStatus){
-
+    // Search for any possible move
+    private boolean CheckPossibilityOfMove(boolean player){
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(this._fieldsStatus[i][j] == (byte)0)
+                    if(this._judge.verifyMove(i, j, player, this._fieldsStatus))
+                        return true;
+            }
         }
+        return false;
     }
 
     private class FieldListener implements ChangeListener{
@@ -98,7 +110,11 @@ public class Game {
                 int row = ((Field)e.getSource()).getId() / 10;
                 int col = ((Field)e.getSource()).getId() % 10;
                 if(_activePlayer){
-                    if(_fieldsStatus[row][col] == 0){
+                    if(!_isBlackMovePossible){
+                        _activePlayer = false;
+                        _board.setActivePlayer(false);
+                    }
+                    else if(_fieldsStatus[row][col] == 0){
                         if(_judge.verifyMove(row, col, true, _fieldsStatus)){
                             _board.setFieldIcon(row,col, (byte)1);
                             _fieldsStatus[row][col] = 1;
@@ -110,7 +126,11 @@ public class Game {
                     }
                 }
                 else{
-                    if(_fieldsStatus[row][col] == 0) {
+                    if(!_isWhiteMovePossible){
+                        _activePlayer = true;
+                        _board.setActivePlayer(true);
+                    }
+                    else if(_fieldsStatus[row][col] == 0) {
                         if(_judge.verifyMove(row, col, false, _fieldsStatus)) {
                             _board.setFieldIcon(row, col, (byte) 2);
                             _fieldsStatus[row][col] = 2;
@@ -123,6 +143,19 @@ public class Game {
                 }
                 ((Field)e.getSource()).setClickStatus(false);
                 updateInfo();
+                _isBlackMovePossible = CheckPossibilityOfMove(true);
+                _isWhiteMovePossible = CheckPossibilityOfMove(false);
+                if(!_isWhiteMovePossible && !_isBlackMovePossible){
+                    if(_playerBlack.getRemainingPaws() > _playerWhite.getRemainingPaws())
+                    JOptionPane.showMessageDialog(null, "No more moves! Black won!");
+                    else JOptionPane.showMessageDialog(null, "No more moves! White won!");
+                }
+                if(_playerWhite.getRemainingPaws() == 0){
+                    JOptionPane.showMessageDialog(null, "White won!");
+                }
+                if(_playerBlack.getRemainingPaws() == 0){
+                    JOptionPane.showMessageDialog(null, "Black won!");
+                }
             }
         }
     }
