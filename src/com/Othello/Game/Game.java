@@ -8,10 +8,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.List;
 
-// Singleton pattern
 public class Game {
-    private static Game gameInstance = null;
-
     private  byte[][] _fieldsStatus; // 0 - empty, 1 - black, 2 - white
     private  Board _board;
     private  Player _playerBlack, _playerWhite;
@@ -19,7 +16,7 @@ public class Game {
     private Judge _judge = Judge.getJudgeInstance();
     private BoardUpdater _boardUpdater = BoardUpdater.getBoardUpdaterInstance();
 
-    private  Game(){
+    public  Game(){
         _board = new Board();
         for(Field fields[] : _board._fields){
             for(Field field : fields ){
@@ -30,14 +27,6 @@ public class Game {
         _playerBlack = new Player(true);
         _playerWhite = new Player(false);
         setNewGame();
-    }
-
-    // singleton instance returning method
-    public static Game getGameInstance(){
-        if(gameInstance == null){
-            gameInstance = new Game();
-        }
-        return  gameInstance;
     }
 
     private void setNewGame(){
@@ -93,6 +82,12 @@ public class Game {
         else{
             _playerBlack.setRemainingPaws(_playerBlack.getRemainingPaws() + pawnsChange);
             _playerWhite.setRemainingPaws(_playerWhite.getRemainingPaws() - pawnsChange);
+        }
+    }
+
+    private void CheckPossibilityOfMove(boolean activePlayer){
+        for(byte fields[] : this._fieldsStatus){
+
         }
     }
 
