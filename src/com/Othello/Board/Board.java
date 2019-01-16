@@ -9,9 +9,10 @@ public class Board extends JFrame {
     private JPanel _layout;
     private JPanel _board = new JPanel();
     private JPanel _info = new JPanel();
-
+    private JToolBar _toolBar;
     public final Field[][] _fields = new Field[8][8];
     private JLabel _whiteRemaining, _blackRemaining, _activePlayer;
+    public JButton newGame, saveGame, loadGame, exitGame, help;
 
     public Board(){
         super("Othello");
@@ -19,20 +20,20 @@ public class Board extends JFrame {
         setSize(1000, 1000);
         setResizable(false);
 
-        // Inject menu bar
-        this.setJMenuBar(this.CreateMenuBar());
-
         // layout
         _layout = new JPanel();
-        _layout.setLayout(new BoxLayout(_layout, BoxLayout.PAGE_AXIS));
+        _layout.setLayout(new BorderLayout());
 
+
+        this.setToolBar();
+        _layout.add(_toolBar,BorderLayout.PAGE_START);
         // info
         this.setInitialInfo();
-        _layout.add(_info);
+        _layout.add(_info, BorderLayout.CENTER);
 
         // fields 8x8
         this.CreateFields();
-        _layout.add(_board);
+        _layout.add(_board, BorderLayout.PAGE_END);
 
         this.add(_layout);
         setVisible(true);
@@ -63,50 +64,47 @@ public class Board extends JFrame {
         }
     }
 
-    private JMenuBar CreateMenuBar(){
-        JMenuBar menuBar = new JMenuBar();
-
-        var menu = new JMenu("Game");
-
-        var newGame = new JMenuItem("New");
-        newGame.setToolTipText("Start new game");
-
-        var saveGame = new JMenuItem("Save");
-        saveGame.setToolTipText("Save actual game");
-
-        var loadGame = new JMenuItem("Load");
-        loadGame.setToolTipText("Load saved game");
-
-        var exitGame = new JMenuItem("EXIT");
+    private void setToolBar(){
+        _toolBar = new JToolBar();
+        _toolBar.setLayout(new GridLayout(0,5));
+        _toolBar.setFloatable(false);
+        _toolBar.setRollover(true);
+        newGame = new JButton("New Game");
+        saveGame = new JButton("Save");
+        loadGame = new JButton("Load");
+        exitGame = new JButton("EXIT");
         exitGame.setMnemonic(KeyEvent.VK_E);
         exitGame.setToolTipText("Exit application");
-        exitGame.addActionListener((event) -> System.exit(0));
-
-        menu.add(newGame);
-        menu.add(saveGame);
-        menu.add(loadGame);
-        menu.add(exitGame);
-
-        menuBar.add(menu);
-
-        return  menuBar;
+        exitGame.addActionListener((event) -> {
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog (null, "Do you want to close?","Warning",dialogButton);
+            if(dialogResult == JOptionPane.YES_OPTION)
+                System.exit(0);
+        });
+        help = new JButton("HELP");
+        _toolBar.add(newGame);
+        _toolBar.add(saveGame);
+        _toolBar.add(loadGame);
+        _toolBar.add(help, BorderLayout.EAST);
+        _toolBar.add(exitGame, BorderLayout.EAST);
     }
 
     private void setInitialInfo(){
-        _info.setLayout(new GridLayout(1,3));
-        _info.setMaximumSize(new Dimension(800,50));
+        _info.setLayout(new GridLayout(0,3));
+        _info.setPreferredSize(new Dimension(1000,20));
+        _info.setBackground(Color.LIGHT_GRAY);
 
         _whiteRemaining = new JLabel() ;
-        _whiteRemaining.setFont(new Font("Arial", Font.BOLD, 20));
+        _whiteRemaining.setFont(new Font("Arial", Font.BOLD, 30));
         _whiteRemaining.setHorizontalAlignment(JLabel.CENTER);
 
         _activePlayer = new JLabel();
-        _activePlayer.setFont(new Font("Arial", Font.BOLD, 30));
+        _activePlayer.setFont(new Font("Arial", Font.BOLD, 40));
         _activePlayer.setForeground(Color.RED);
         _activePlayer.setHorizontalAlignment(JLabel.CENTER);
 
         _blackRemaining = new JLabel();
-        _blackRemaining.setFont(new Font("Arial", Font.BOLD, 20));
+        _blackRemaining.setFont(new Font("Arial", Font.BOLD, 30));
         _blackRemaining.setHorizontalAlignment(JLabel.CENTER);
 
         _info.add(_whiteRemaining);

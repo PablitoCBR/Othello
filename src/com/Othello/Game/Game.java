@@ -110,11 +110,7 @@ public class Game {
                 int row = ((Field)e.getSource()).getId() / 10;
                 int col = ((Field)e.getSource()).getId() % 10;
                 if(_activePlayer){
-                    if(!_isBlackMovePossible){
-                        _activePlayer = false;
-                        _board.setActivePlayer(false);
-                    }
-                    else if(_fieldsStatus[row][col] == 0){
+                    if(_fieldsStatus[row][col] == 0){
                         if(_judge.verifyMove(row, col, true, _fieldsStatus)){
                             _board.setFieldIcon(row,col, (byte)1);
                             _fieldsStatus[row][col] = 1;
@@ -126,11 +122,7 @@ public class Game {
                     }
                 }
                 else{
-                    if(!_isWhiteMovePossible){
-                        _activePlayer = true;
-                        _board.setActivePlayer(true);
-                    }
-                    else if(_fieldsStatus[row][col] == 0) {
+                    if(_fieldsStatus[row][col] == 0) {
                         if(_judge.verifyMove(row, col, false, _fieldsStatus)) {
                             _board.setFieldIcon(row, col, (byte) 2);
                             _fieldsStatus[row][col] = 2;
@@ -146,15 +138,32 @@ public class Game {
                 _isBlackMovePossible = CheckPossibilityOfMove(true);
                 _isWhiteMovePossible = CheckPossibilityOfMove(false);
                 if(!_isWhiteMovePossible && !_isBlackMovePossible){
-                    if(_playerBlack.getRemainingPaws() > _playerWhite.getRemainingPaws())
+                    if(_playerBlack.getRemainingPaws() < _playerWhite.getRemainingPaws())
                     JOptionPane.showMessageDialog(null, "No more moves! Black won!");
                     else JOptionPane.showMessageDialog(null, "No more moves! White won!");
+                    reset();
                 }
                 if(_playerWhite.getRemainingPaws() == 0){
                     JOptionPane.showMessageDialog(null, "White won!");
+                    reset();
                 }
                 if(_playerBlack.getRemainingPaws() == 0){
                     JOptionPane.showMessageDialog(null, "Black won!");
+                    reset();
+                }
+                if(_activePlayer){
+                    if(!_isBlackMovePossible){
+                        JOptionPane.showMessageDialog(null, "No possible moves! Black loses his tour!");
+                        _activePlayer = false;
+                        _board.setActivePlayer(false);
+                    }
+                }
+                else{
+                    if(!_isWhiteMovePossible){
+                        JOptionPane.showMessageDialog(null, "No possible moves! White loses his tour!");
+                        _activePlayer = true;
+                        _board.setActivePlayer(true);
+                    }
                 }
             }
         }
