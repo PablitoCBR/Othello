@@ -9,10 +9,11 @@ public class Board extends JFrame {
     private JPanel _layout;
     private JPanel _board = new JPanel();
     private JPanel _info = new JPanel();
-    private JToolBar _toolBar;
+    private JPanel _tools = new JPanel();
+    private JToolBar _toolBar, _history;
     public final Field[][] _fields = new Field[8][8];
     private JLabel _whiteRemaining, _blackRemaining, _activePlayer;
-    public JButton newGame, saveGame, loadGame, exitGame, help;
+    public JButton newGame, saveGame, loadGame, exitGame, help, previous, next;
 
     public Board(){
         super("Othello");
@@ -24,9 +25,10 @@ public class Board extends JFrame {
         _layout = new JPanel();
         _layout.setLayout(new BorderLayout());
 
-
+        // tool bars
         this.setToolBar();
-        _layout.add(_toolBar,BorderLayout.PAGE_START);
+        _layout.add(_tools,BorderLayout.PAGE_START);
+
         // info
         this.setInitialInfo();
         _layout.add(_info, BorderLayout.CENTER);
@@ -64,9 +66,11 @@ public class Board extends JFrame {
         }
     }
 
+
     private void setToolBar(){
+        _tools.setLayout(new GridLayout(2,1));
         _toolBar = new JToolBar();
-        _toolBar.setLayout(new GridLayout(0,5));
+        _toolBar.setLayout(new GridLayout(1,5));
         _toolBar.setFloatable(false);
         _toolBar.setRollover(true);
         newGame = new JButton("New Game");
@@ -87,12 +91,23 @@ public class Board extends JFrame {
         _toolBar.add(loadGame);
         _toolBar.add(help, BorderLayout.EAST);
         _toolBar.add(exitGame, BorderLayout.EAST);
+        _tools.add(_toolBar);
+
+        _history = new JToolBar();
+        _history.setLayout(new GridLayout(1,2));
+        _history.setFloatable(false);
+        _history.setRollover(true);
+        next = new JButton("NEXT ROUND");
+        next.setFont(new Font("Arial", Font.BOLD, 20));
+        previous = new JButton("PREVIOUS ROUND");
+        previous.setFont(new Font("Arial", Font.BOLD, 20));
+        _history.add(previous);
+        _history.add(next);
+        _tools.add(_history);
     }
 
     private void setInitialInfo(){
         _info.setLayout(new GridLayout(0,3));
-        _info.setPreferredSize(new Dimension(1000,20));
-        _info.setBackground(Color.LIGHT_GRAY);
 
         _whiteRemaining = new JLabel() ;
         _whiteRemaining.setFont(new Font("Arial", Font.BOLD, 30));

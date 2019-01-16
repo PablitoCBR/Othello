@@ -4,11 +4,13 @@ import com.Othello.Board.Board;
 import com.Othello.Board.Field;
 import com.Othello.Player.Player;
 import com.Othello.Game.Helpers.FieldStatusTemp;
+import com.Othello.Game.Helpers.RoundData;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.List;
+import java.util.Stack;
 
 public class Game {
     private  byte[][] _fieldsStatus; // 0 - empty, 1 - black, 2 - white
@@ -18,6 +20,8 @@ public class Game {
     private Judge _judge = Judge.getJudgeInstance();
     private BoardUpdater _boardUpdater = BoardUpdater.getBoardUpdaterInstance();
     private boolean _isBlackMovePossible, _isWhiteMovePossible;
+    private Stack<RoundData> _history;
+    private Stack<RoundData> _historyAfterTemp;
 
     public  Game(){
         this._board = new Board();
@@ -30,6 +34,13 @@ public class Game {
         this._playerBlack = new Player(true);
         this._playerWhite = new Player(false);
         this.setNewGame();
+
+        this._board.newGame.addActionListener((event) -> {
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog (null, "Start new game?","Warning",dialogButton);
+            if(dialogResult == JOptionPane.YES_OPTION)
+                this.reset();
+        });
     }
 
     private void setNewGame(){
