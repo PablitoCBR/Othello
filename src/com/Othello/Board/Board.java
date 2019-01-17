@@ -26,7 +26,7 @@ public class Board extends JFrame {
         _layout.setLayout(new BorderLayout());
 
         // tool bars
-        this.setToolBar();
+        this.setToolBars();
         _layout.add(_tools,BorderLayout.PAGE_START);
 
         // info
@@ -67,7 +67,7 @@ public class Board extends JFrame {
     }
 
 
-    private void setToolBar(){
+    private void setToolBars(){
         _tools.setLayout(new GridLayout(2,1));
         _toolBar = new JToolBar();
         _toolBar.setLayout(new GridLayout(1,5));

@@ -1,5 +1,7 @@
 package com.Othello.Game.Helpers;
 
+import com.Othello.Game.History;
+
 public class RoundData {
     private byte[][] _fieldsStatus;
     private boolean _activePlayer;
