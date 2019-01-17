@@ -1,9 +1,11 @@
 package com.Othello.Game;
 
 import com.Othello.Game.Helpers.RoundData;
+
+import java.io.Serializable;
 import java.util.Stack;
 
-public class History {
+public class History implements Serializable {
     private Stack<RoundData> _history;
     private Stack<RoundData> _historyTemp;
 
@@ -20,22 +22,18 @@ public class History {
         else throw  new NullPointerException();
     }
 
-    // To get previous we give actual and put it on temp
-    public RoundData getPreviousRound(RoundData activeRound){
-        if(activeRound != null){
-            _historyTemp.add(activeRound);
-            return _history.pop();
-        }
-        throw new NullPointerException();
+    public RoundData getPreviousRound(){
+        return  _history.pop();
     }
 
     public RoundData getNextRound(){
-        if(_historyTemp.size() > 0){
-            RoundData data = _historyTemp.pop();
-            _history.add(data);
-            return data;
-        }
-        throw new NullPointerException();
+        System.out.println(_historyTemp.size());
+            return _historyTemp.pop();
+    }
+    public void addNextRound(RoundData data){
+        if(data != null)
+            _historyTemp.add(data);
+        else throw new NullPointerException();
     }
 
     public void clearHistory(){
@@ -44,10 +42,12 @@ public class History {
     }
 
     public boolean isNextPossible(){
+        System.out.println(_historyTemp.size());
         return _historyTemp.size() > 0;
     }
 
     public boolean isPreviousPossible(){
+
         return _history.size() > 0;
     }
 }

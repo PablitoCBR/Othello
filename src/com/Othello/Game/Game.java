@@ -2,6 +2,7 @@ package com.Othello.Game;
 
 import com.Othello.Board.Board;
 import com.Othello.Board.Field;
+import com.Othello.FileHandler.FileHandler;
 import com.Othello.Player.Player;
 import com.Othello.Game.Helpers.FieldStatusTemp;
 import com.Othello.Game.Helpers.RoundData;
@@ -11,17 +12,21 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 
 public class Game {
     private  byte[][] _fieldsStatus; // 0 - empty, 1 - black, 2 - white
-    private  Board _board;
-    private  Player _playerBlack, _playerWhite;
     private boolean _activePlayer; // true = black, false = white
+    private boolean _isBlackMovePossible, _isWhiteMovePossible;
+
     private Judge _judge = Judge.getJudgeInstance();
     private BoardUpdater _boardUpdater = BoardUpdater.getBoardUpdaterInstance();
-    private boolean _isBlackMovePossible, _isWhiteMovePossible;
+    private FileHandler _fileHandler = FileHandler.getFileHandlerInstance();
     private History _history;
+    private  Board _board;
+    private  Player _playerBlack, _playerWhite;
+
 
     public  Game(){
         this._board = new Board();
@@ -42,7 +47,14 @@ public class Game {
             if(dialogResult == JOptionPane.YES_OPTION)
                 this.reset();
         });
+        this._board.previous.setEnabled(false);
         this._board.previous.addActionListener(new PreviousAction());
+        this._board.saveGame.addActionListener(new SaveAction());
+        this._board.loadGame.addActionListener(new LoadAction());
+        this._board.next.setEnabled(false);
+        this._board.next.addActionListener(new NextAction());
+        this._board.help.addActionListener((event) ->
+                JOptionPane.showMessageDialog (null, _helpInfo));
     }
 
     private void setNewGame(){
@@ -174,6 +186,8 @@ public class Game {
     private void AfterMoveChecks(){
         _isBlackMovePossible = checkPossibilityOfMove(true);
         _isWhiteMovePossible = checkPossibilityOfMove(false);
+        _board.next.setEnabled(_history.isNextPossible());
+        _board.previous.setEnabled((_history.isPreviousPossible()));
         CheckEndOfGame();
         CheckIfTourIsLost();
         updateInfo();
@@ -226,12 +240,71 @@ public class Game {
 
     private class PreviousAction implements ActionListener{
         @Override
-        public void actionPerformed(ActionEvent e){
+        public void actionPerformed(ActionEvent event){
             try{
-                LoadRound(_history.getPreviousRound(getActualRoundData()));
-            } catch (Exception ex){ System.out.println(ex.getMessage());}
+                _history.addNextRound(getActualRoundData());
+                LoadRound(_history.getPreviousRound());
+                _board.next.setEnabled(true);
+            } catch (Exception ex){ ex.printStackTrace();}
         }
     }
+
+    private class NextAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent event){
+            try{
+                if(_history.isNextPossible()){
+                    _history.addRoundData(getActualRoundData());
+                    LoadRound(_history.getNextRound());
+                }
+            } catch (Exception ex) { ex.printStackTrace();}
+        }
+    }
+
+    private class SaveAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent event){
+            JFrame parentFrame = new JFrame();
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File("saves"));
+            fileChooser.setDialogTitle("Specify a file to save");
+            if (fileChooser.showSaveDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {
+                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                _history.addRoundData(getActualRoundData());
+                _fileHandler.saveGame(_history, path);
+                System.out.println("Save as file: " + path);
+            }
+        }
+    }
+
+    private class LoadAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent event){
+            JFrame parentFrame = new JFrame();
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File("saves"));
+            fileChooser.setDialogTitle("Load saved game");
+            if (fileChooser.showOpenDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {
+                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                History history = _fileHandler.getSavedGame(path);
+                if(history.isPreviousPossible())
+                    LoadRound(history.getPreviousRound());
+                _history = history;
+            }
+
+        }
+    }
+
+
+    // Info help
+    private String _helpInfo = " Othello\n" +
+            "1) Two both players have at start 32 pawns in two colors (black and white)!\n" +
+            "2) Only allow move is when you take over enemy pawns!\n" +
+            "3) To take over pawns you need surround them in one line vertically, horizontally or diagonally!\n" +
+            "3) You can take over more than one line at once! \n" +
+            "4) Game end if one of player end with no pawns left or when there is no more possible moves!\n" +
+            "5) If both players have no possible moves the game end and player with less pawns left won!\n" +
+            "6) If player have no possible move in his tour he lose his tour!";
 }
 
 

@@ -5,6 +5,9 @@ import com.Othello.Game.Game;
 
 public class Main {
     public static void main(String[] args) {
-        Game game = new Game();
+        run();
+    }
+    public static void run(){
+        new Game();
     }
 }

@@ -2,7 +2,9 @@ package com.Othello.Game.Helpers;
 
 import com.Othello.Game.History;
 
-public class RoundData {
+import java.io.Serializable;
+
+public class RoundData implements Serializable {
     private byte[][] _fieldsStatus;
     private boolean _activePlayer;
     private int _whitePawnsLeft;
