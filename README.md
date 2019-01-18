@@ -1,6 +1,6 @@
 <h1>Othello</h1>
 <h3>Othello desktop two players game written in Java </h3>
-
+<hr>
 <h4>Rules:</h4>
           <h5>1) <i>Two both players have at start 32 pawns in two colors (black and white)!</h5></i>
           <h5>2) <i>Only allow move is when you take over enemy pawns!</h5></i>
