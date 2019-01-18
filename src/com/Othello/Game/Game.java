@@ -165,10 +165,19 @@ public class Game {
     }
 
     private RoundData getActualRoundData(){
-        return new RoundData(_fieldsStatus , _activePlayer,
+        return new RoundData(CloneFieldsStatus(_fieldsStatus) , _activePlayer,
                 _playerWhite.getRemainingPaws(), _playerBlack.getRemainingPaws());
     }
 
+    private byte[][] CloneFieldsStatus(byte[][] fieldStatus){
+        byte[][] cloned = new byte[8][8];
+        for(int i = 0;  i<8;i++ ){
+            for(int j=0;j<8;j++){
+                cloned[i][j] = fieldStatus[i][j];
+            }
+        }
+        return cloned;
+    }
 
     private void LoadRound(RoundData data){
         byte[][] fieldsStatus = data.getFieldsStatus();
