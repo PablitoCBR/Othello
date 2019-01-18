@@ -28,7 +28,6 @@ public class Board extends JFrame {
         // tool bars
         this.setToolBars();
         _layout.add(_tools,BorderLayout.PAGE_START);
-
         // info
         this.setInitialInfo();
         _layout.add(_info, BorderLayout.CENTER);
@@ -73,9 +72,12 @@ public class Board extends JFrame {
         _toolBar.setLayout(new GridLayout(1,5));
         _toolBar.setFloatable(false);
         _toolBar.setRollover(true);
+
         newGame = new JButton("New Game");
         saveGame = new JButton("Save");
         loadGame = new JButton("Load");
+        help = new JButton("HELP");
+
         exitGame = new JButton("EXIT");
         exitGame.setMnemonic(KeyEvent.VK_E);
         exitGame.setToolTipText("Exit application");
@@ -85,7 +87,8 @@ public class Board extends JFrame {
             if(dialogResult == JOptionPane.YES_OPTION)
                 System.exit(0);
         });
-        help = new JButton("HELP");
+
+
         _toolBar.add(newGame);
         _toolBar.add(saveGame);
         _toolBar.add(loadGame);

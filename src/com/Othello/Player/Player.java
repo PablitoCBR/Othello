@@ -1,11 +1,9 @@
 package com.Othello.Player;
 
 public class Player {
-    private boolean _color; // true = black, false = white
     private int _remainingPaws;
 
-    public Player(boolean color){
-        _color = color;
+    public Player(){
         _remainingPaws = 32;
     }
 
@@ -16,9 +14,5 @@ public class Player {
         if(amount >= 0){
             this._remainingPaws = amount;
         }
-    }
-
-    public boolean getColor() {
-        return _color;
     }
 }

@@ -22,17 +22,22 @@ public class History implements Serializable {
         else throw  new NullPointerException();
     }
 
-    public void addRoundDataWithoutClearTemp(RoundData data){
+    private void addRoundDataWithoutClearTemp(RoundData data){
         if(data != null){
             _history.add(data);
         }else throw  new NullPointerException();
     }
 
-    public RoundData getPreviousRound(){
-        return  _history.pop();
+    public RoundData getPreviousRound(RoundData data){
+        if(data != null){
+            addNextRound(data);
+            return  _history.pop();
+        }
+        else return _history.pop();
     }
 
-    public RoundData getNextRound(){
+    public RoundData getNextRound(RoundData data){
+            addRoundDataWithoutClearTemp(data);
             return _historyTemp.pop();
     }
     public void addNextRound(RoundData data){

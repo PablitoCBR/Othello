@@ -3,6 +3,7 @@ package com.Othello.Game;
 import com.Othello.Board.Board;
 import com.Othello.Board.Field;
 import com.Othello.FileHandler.FileHandler;
+import com.Othello.Game.Helpers.FieldsStatusCloner;
 import com.Othello.Player.Player;
 import com.Othello.Game.Helpers.FieldStatusTemp;
 import com.Othello.Game.Helpers.RoundData;
@@ -23,6 +24,7 @@ public class Game {
     private Judge _judge = Judge.getJudgeInstance();
     private BoardUpdater _boardUpdater = BoardUpdater.getBoardUpdaterInstance();
     private FileHandler _fileHandler = FileHandler.getFileHandlerInstance();
+    private FieldsStatusCloner _fieldsStatusCloner = FieldsStatusCloner.getInstanceFieldsStatusCloner();
     private History _history;
     private  Board _board;
     private  Player _playerBlack, _playerWhite;
@@ -37,17 +39,11 @@ public class Game {
             }
         }
         this._fieldsStatus = new byte[8][8];
-        this._playerBlack = new Player(true);
-        this._playerWhite = new Player(false);
-        this.setNewGame();
+        this._playerBlack = new Player();
+        this._playerWhite = new Player();
 
-        this._board.newGame.addActionListener((event) -> {
-            int dialogButton = JOptionPane.YES_NO_OPTION;
-            int dialogResult = JOptionPane.showConfirmDialog (null,
-                    "Start new game?","Warning",dialogButton);
-            if(dialogResult == JOptionPane.YES_OPTION)
-                this.reset();
-        });
+
+        this._board.newGame.addActionListener(new NewGameAction());
         this._board.previous.setEnabled(false);
         this._board.previous.addActionListener(new PreviousAction());
         this._board.saveGame.addActionListener(new SaveAction());
@@ -56,6 +52,8 @@ public class Game {
         this._board.next.addActionListener(new NextAction());
         this._board.help.addActionListener((event) ->
                 JOptionPane.showMessageDialog (null, _helpInfo));
+
+        this.setNewGame();
     }
 
     private void setNewGame(){
@@ -165,18 +163,8 @@ public class Game {
     }
 
     private RoundData getActualRoundData(){
-        return new RoundData(CloneFieldsStatus(_fieldsStatus) , _activePlayer,
+        return new RoundData(_fieldsStatusCloner.cloneFieldsStatus(_fieldsStatus) , _activePlayer,
                 _playerWhite.getRemainingPaws(), _playerBlack.getRemainingPaws());
-    }
-
-    private byte[][] CloneFieldsStatus(byte[][] fieldStatus){
-        byte[][] cloned = new byte[8][8];
-        for(int i = 0;  i<8;i++ ){
-            for(int j=0;j<8;j++){
-                cloned[i][j] = fieldStatus[i][j];
-            }
-        }
-        return cloned;
     }
 
     private void LoadRound(RoundData data){
@@ -206,6 +194,7 @@ public class Game {
     //////////////////////////
     //// Action Listeners ////
     //////////////////////////
+    // Fields action listener
     private class FieldListener implements ChangeListener{
         @Override
         public void stateChanged(ChangeEvent e){
@@ -218,7 +207,7 @@ public class Game {
                         if(_judge.verifyMove(row, col, true, _fieldsStatus)) {
                             try {
                                 _history.addRoundData(getActualRoundData());
-                            } catch (Exception ex){ System.out.println(ex.getMessage()); }
+                            } catch (Exception ex){ ex.printStackTrace(); }
 
                             _board.setFieldIcon(row, col, (byte) 1);
                             _fieldsStatus[row][col] = 1;
@@ -232,7 +221,7 @@ public class Game {
                         if(_judge.verifyMove(row, col, false, _fieldsStatus)) {
                             try {
                                 _history.addRoundData(getActualRoundData());
-                            } catch (Exception ex){ System.out.println(ex.getMessage()); }
+                            } catch (Exception ex){ ex.printStackTrace(); }
 
                             _board.setFieldIcon(row, col, (byte) 2);
                             _fieldsStatus[row][col] = 2;
@@ -248,12 +237,12 @@ public class Game {
         }
     }
 
+    // Tool bar action listeners
     private class PreviousAction implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent event){
             try{
-                _history.addNextRound(getActualRoundData());
-                LoadRound(_history.getPreviousRound());
+                LoadRound(_history.getPreviousRound(getActualRoundData()));
                 _board.next.setEnabled(true);
             } catch (Exception ex){
                 ex.printStackTrace();
@@ -268,8 +257,7 @@ public class Game {
         public void actionPerformed(ActionEvent event){
             try{
                 if(_history.isNextPossible()){
-                    _history.addRoundDataWithoutClearTemp(getActualRoundData());
-                    LoadRound(_history.getNextRound());
+                    LoadRound(_history.getNextRound(getActualRoundData()));
                     _board.previous.setEnabled(true);
                 }
             } catch (Exception ex) {
@@ -283,16 +271,18 @@ public class Game {
     private class SaveAction implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent event){
-            JFrame parentFrame = new JFrame();
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File("saves"));
-            fileChooser.setDialogTitle("Specify a file to save");
-            if (fileChooser.showSaveDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {
-                String path = fileChooser.getSelectedFile().getAbsolutePath();
-                _history.addRoundData(getActualRoundData());
-                _fileHandler.saveGame(_history, path);
-                System.out.println("Save as file: " + path);
-            }
+            try{
+                JFrame parentFrame = new JFrame();
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File("saves"));
+                fileChooser.setDialogTitle("Specify a file to save");
+                if (fileChooser.showSaveDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {
+                    String path = fileChooser.getSelectedFile().getAbsolutePath();
+                    _history.addRoundData(getActualRoundData());
+                    _fileHandler.saveGame(_history, path);
+                    System.out.println("Save as file: " + path);
+                }
+            } catch (Exception ex){ ex.printStackTrace(); }
         }
     }
 
@@ -304,16 +294,32 @@ public class Game {
             fileChooser.setCurrentDirectory(new File("saves"));
             fileChooser.setDialogTitle("Load saved game");
             if (fileChooser.showOpenDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {
-                String path = fileChooser.getSelectedFile().getAbsolutePath();
-                History history = _fileHandler.getSavedGame(path);
-                if(history.isPreviousPossible())
-                    LoadRound(history.getPreviousRound());
-                _history = history;
+                try{
+                    String path = fileChooser.getSelectedFile().getAbsolutePath();
+                    History history = _fileHandler.getSavedGame(path);
+                    if(history.isPreviousPossible()){
+                        LoadRound(history.getPreviousRound(null));
+                        _history = history;
+                    }
+                    else{
+                        System.out.println("History is empty!!");
+                    }
+                } catch (Exception ex){ ex.printStackTrace(); }
             }
 
         }
     }
 
+    private class NewGameAction implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent event){
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog (null,
+                    "Start new game?","Warning",dialogButton);
+            if(dialogResult == JOptionPane.YES_OPTION)
+                reset();
+        }
+    }
 
     // Info help
     private String _helpInfo = " Othello\n" +
