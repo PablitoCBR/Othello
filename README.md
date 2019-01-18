@@ -1,4 +1,4 @@
-#Othello
+<h1>Othello</h1>
 <h3>Othello desktop two players game written in Java </h3>
 
 <h4>Rules:</h4>
