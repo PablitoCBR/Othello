@@ -43,7 +43,8 @@ public class Game {
 
         this._board.newGame.addActionListener((event) -> {
             int dialogButton = JOptionPane.YES_NO_OPTION;
-            int dialogResult = JOptionPane.showConfirmDialog (null, "Start new game?","Warning",dialogButton);
+            int dialogResult = JOptionPane.showConfirmDialog (null,
+                    "Start new game?","Warning",dialogButton);
             if(dialogResult == JOptionPane.YES_OPTION)
                 this.reset();
         });
@@ -245,7 +246,11 @@ public class Game {
                 _history.addNextRound(getActualRoundData());
                 LoadRound(_history.getPreviousRound());
                 _board.next.setEnabled(true);
-            } catch (Exception ex){ ex.printStackTrace();}
+            } catch (Exception ex){
+                ex.printStackTrace();
+            } finally {
+                _board.previous.setEnabled(_history.isPreviousPossible());
+            }
         }
     }
 
@@ -254,10 +259,15 @@ public class Game {
         public void actionPerformed(ActionEvent event){
             try{
                 if(_history.isNextPossible()){
-                    _history.addRoundData(getActualRoundData());
+                    _history.addRoundDataWithoutClearTemp(getActualRoundData());
                     LoadRound(_history.getNextRound());
+                    _board.previous.setEnabled(true);
                 }
-            } catch (Exception ex) { ex.printStackTrace();}
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+                _board.next.setEnabled(_history.isNextPossible());
+            }
         }
     }
 
