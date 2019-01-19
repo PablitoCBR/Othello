@@ -44,11 +44,11 @@ public class Game {
 
 
         this._board.newGame.addActionListener(new NewGameAction());
-        this._board.previous.setEnabled(false);
         this._board.previous.addActionListener(new PreviousAction());
         this._board.saveGame.addActionListener(new SaveAction());
         this._board.loadGame.addActionListener(new LoadAction());
-        this._board.next.setEnabled(false);
+        this._board.previous.setEnabled(_history.isPreviousPossible());
+        this._board.next.setEnabled(_history.isNextPossible());
         this._board.next.addActionListener(new NextAction());
         this._board.help.addActionListener((event) ->
                 JOptionPane.showMessageDialog (null, _helpInfo));
@@ -74,6 +74,9 @@ public class Game {
         this._board.setFieldIcon(3,4, (byte) 1);
         this._board.setFieldIcon(4,3, (byte) 1);
         this._board.setFieldIcon(4,4, (byte) 2);
+
+        this._board.previous.setEnabled(_history.isPreviousPossible());
+        this._board.next.setEnabled(_history.isNextPossible());
 
         this._isBlackMovePossible = true;
         this._isWhiteMovePossible = true;
@@ -300,6 +303,8 @@ public class Game {
                     if(history.isPreviousPossible()){
                         LoadRound(history.getPreviousRound(null));
                         _history = history;
+                        _board.previous.setEnabled(_history.isPreviousPossible());
+                        _board.next.setEnabled(_history.isNextPossible());
                     }
                     else{
                         System.out.println("History is empty!!");

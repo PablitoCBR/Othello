@@ -13,6 +13,6 @@ public class Player {
     public void setRemainingPaws(int amount){
         if(amount >= 0){
             this._remainingPaws = amount;
-        }
+        } else this._remainingPaws = 0;
     }
 }
